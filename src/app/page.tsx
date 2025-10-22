@@ -1,10 +1,9 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sidebar } from '@/components/settings/sidebar';
 import { MobileHeader } from '@/components/settings/mobile-header';
-import { ConnectedEmail } from '@/components/settings/connected-email';
 import { ActiveRoles } from '@/components/settings/active-roles';
 import { UserRolesTable } from '@/components/settings/user-roles-table';
-import { mockUserRoles, mockActiveRoles } from '@/lib/mock-data';
+import { ConnectedEmail } from '@/components/settings/connected-email';
 
 export default function Home() {
   const tabItems = [
@@ -38,7 +37,7 @@ export default function Home() {
             <Tabs defaultValue="roles" className="space-y-6">
               <div className="border-border overflow-x-auto">
                 <TabsList className="inline-flex w-fit items-center justify-center bg-transparent p-0">
-                  {tabItems.map((tab, idx) => (
+                  {tabItems.map((tab) => (
                     <TabsTrigger
                       key={tab.value}
                       value={tab.value}
@@ -57,14 +56,13 @@ export default function Home() {
                     <p className="text-sm text-muted-foreground border-border border-b pb-2 ">
                       Update your roles details and information.
                     </p>
-
-                    <ConnectedEmail />
+                  <ConnectedEmail />
                   </div>
                 </div>
 
-                <ActiveRoles roles={mockActiveRoles} />
+                <ActiveRoles />
 
-                <UserRolesTable roles={mockUserRoles} />
+                <UserRolesTable />
               </TabsContent>
 
               {tabItems

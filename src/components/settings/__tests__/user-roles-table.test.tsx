@@ -1,24 +1,100 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import type { Mock } from 'vitest';
 import { render, screen } from '@testing-library/react';
+
+vi.mock('@/hooks/roles', () => {
+  return {
+    useRoles: vi.fn(),
+  };
+});
+
+import { useRoles } from '@/hooks/roles';
 import { UserRolesTable } from '../user-roles-table';
-import { mockUserRoles } from '@/lib/mock-data';
+
+type MockRole = {
+  id: string;
+  name: string;
+  type: string;
+  dateCreated: string;
+  status: string;
+  users?: Array<{ id?: string; name?: string; avatar?: string }>;
+  teamMembers?: Array<{ id?: string; name?: string; avatar?: string }>;
+};
+
+const makeUseRolesReturn = (roles: MockRole[] = []) => ({
+  roles,
+  total: roles.length,
+  isLoading: false,
+  isValidating: false,
+  isError: false,
+  error: null,
+  refresh: vi.fn(),
+});
+
+const sampleRoles: MockRole[] = [
+  {
+    id: '1',
+    name: 'Superadmin',
+    type: 'DEFAULT',
+    dateCreated: 'Jan 1, 2023',
+    status: 'Active',
+    users: [
+      { id: 'u1', name: 'User One' },
+      { id: 'u2', name: 'User Two' },
+      { id: 'u3', name: 'User Three' },
+      { id: 'u4', name: 'User Four' },
+      { id: 'u5', name: 'User Five' },
+    ],
+  },
+  {
+    id: '2',
+    name: 'Merchantadmin',
+    type: 'CUSTOM',
+    dateCreated: 'Feb 1, 2023',
+    status: 'Active',
+    users: [
+      { id: 'u1', name: 'User One' },
+      { id: 'u2', name: 'User Two' },
+      { id: 'u3', name: 'User Three' },
+      { id: 'u4', name: 'User Four' },
+      { id: 'u5', name: 'User Five' },
+    ],
+  },
+  {
+    id: '3',
+    name: 'Supportadmin',
+    type: 'SYSTEM-CUSTOM',
+    dateCreated: 'Feb 1, 2023',
+    status: 'Pending',
+    users: [
+      { id: 'u1', name: 'User One' },
+      { id: 'u2', name: 'User Two' },
+      { id: 'u3', name: 'User Three' },
+      { id: 'u4', name: 'User Four' },
+    ],
+  },
+];
 
 describe('UserRolesTable', () => {
+  beforeEach(() => {
+    (useRoles as unknown as ReturnType<typeof vi.fn>).mockReset?.();
+  });
+
   it('renders the table title', () => {
-    render(<UserRolesTable roles={mockUserRoles} />);
-    
+    (useRoles as unknown as Mock).mockReturnValue(makeUseRolesReturn(sampleRoles));
+    render(<UserRolesTable />);
     expect(screen.getByText('User Roles')).toBeInTheDocument();
   });
 
   it('renders download all button', () => {
-    render(<UserRolesTable roles={mockUserRoles} />);
-    
+    (useRoles as unknown as Mock).mockReturnValue(makeUseRolesReturn(sampleRoles));
+    render(<UserRolesTable />);
     expect(screen.getByText('Download all')).toBeInTheDocument();
   });
 
   it('renders table headers', () => {
-    render(<UserRolesTable roles={mockUserRoles} />);
-    
+    (useRoles as unknown as Mock).mockReturnValue(makeUseRolesReturn(sampleRoles));
+    render(<UserRolesTable />);
     expect(screen.getByText('Name')).toBeInTheDocument();
     expect(screen.getByText('Type')).toBeInTheDocument();
     expect(screen.getByText('Date Created')).toBeInTheDocument();
@@ -27,55 +103,48 @@ describe('UserRolesTable', () => {
   });
 
   it('renders all role names', () => {
-    render(<UserRolesTable roles={mockUserRoles} />);
-    
-    mockUserRoles.forEach((role) => {
+    (useRoles as unknown as Mock).mockReturnValue(makeUseRolesReturn(sampleRoles));
+    render(<UserRolesTable />);
+    sampleRoles.forEach((role) => {
       expect(screen.getByText(role.name)).toBeInTheDocument();
     });
   });
 
-  it('displays role types as badges', () => {
-    render(<UserRolesTable roles={mockUserRoles} />);
-    
+  it('displays role types as text', () => {
+    (useRoles as unknown as Mock).mockReturnValue(makeUseRolesReturn(sampleRoles));
+    render(<UserRolesTable />);
     expect(screen.getAllByText('DEFAULT').length).toBeGreaterThan(0);
     expect(screen.getAllByText('CUSTOM').length).toBeGreaterThan(0);
     expect(screen.getAllByText('SYSTEM-CUSTOM').length).toBeGreaterThan(0);
   });
 
   it('displays role statuses', () => {
-    render(<UserRolesTable roles={mockUserRoles} />);
-    
+    (useRoles as unknown as Mock).mockReturnValue(makeUseRolesReturn(sampleRoles));
+    render(<UserRolesTable />);
     const activeStatuses = screen.getAllByText('Active');
     expect(activeStatuses.length).toBeGreaterThan(0);
-    
     expect(screen.getByText('Pending')).toBeInTheDocument();
   });
 
   it('displays date created for each role', () => {
-    render(<UserRolesTable roles={mockUserRoles} />);
-    
+    (useRoles as unknown as Mock).mockReturnValue(makeUseRolesReturn(sampleRoles));
+    render(<UserRolesTable />);
     expect(screen.getByText('Jan 1, 2023')).toBeInTheDocument();
     expect(screen.getAllByText('Feb 1, 2023').length).toBeGreaterThan(0);
   });
 
-  it('renders user avatars', () => {
-    render(<UserRolesTable roles={mockUserRoles} />);
-    
-    // Check that avatar fallbacks are rendered
-    const avatars = screen.getAllByText(/US|ER/);
-    expect(avatars.length).toBeGreaterThan(0);
-  });
-
-  it('shows +N indicator for roles with more than 4 users', () => {
-    render(<UserRolesTable roles={mockUserRoles} />);
-    
-    const plusIndicators = screen.getAllByText(/\+\d/);
-    expect(plusIndicators.length).toBeGreaterThan(0);
+  it('renders user avatars fallbacks and +N indicator', () => {
+    (useRoles as unknown as Mock).mockReturnValue(makeUseRolesReturn(sampleRoles));
+    render(<UserRolesTable />);
+    // Initials like UO (User One), UT (User Two) etc. should exist
+    expect(screen.getAllByText(/U[OT]/).length).toBeGreaterThan(0);
+    // +N indicator for first role (5 users -> shows +1)
+    expect(screen.getAllByText(/\+\d/).length).toBeGreaterThan(0);
   });
 
   it('renders with empty roles array', () => {
-    render(<UserRolesTable roles={[]} />);
-    
+    (useRoles as unknown as Mock).mockReturnValue(makeUseRolesReturn([]));
+    render(<UserRolesTable />);
     expect(screen.getByText('User Roles')).toBeInTheDocument();
     expect(screen.getByText('Download all')).toBeInTheDocument();
   });

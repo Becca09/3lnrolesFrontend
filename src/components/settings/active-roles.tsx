@@ -1,20 +1,35 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Users, Plus } from 'lucide-react';
 import { ActiveRole } from '@/types/settings';
+import { useRoles, useRolesByStatus } from '@/hooks/roles';
+import type { Role } from '@/types/roles';
+
 
 interface ActiveRolesProps {
-  roles: ActiveRole[];
+  roles?: ActiveRole[];
 }
 
-export function ActiveRoles({ roles }: ActiveRolesProps) {
+export function ActiveRoles({ roles: initialRoles = [] }: ActiveRolesProps) {
+  const { roles } = useRolesByStatus('active');
+  const { roles: allRoles } = useRoles();
+
+  const derivedFromAll: ActiveRole[] = (allRoles || [])
+    .filter((r: Role) => String(r.status ?? '').toLowerCase() === 'active')
+    .map((r: Role) => ({ id: r.id, name: r.name, lastActive: r.lastActive ?? '' }));
+
+  const finalRoles =
+    roles && roles.length > 0
+      ? (roles as unknown as ActiveRole[])
+      : derivedFromAll.length > 0
+        ? derivedFromAll
+        : initialRoles;
   const defaultSelected = useMemo(
-    () => roles.find((r) => r.isDefault)?.id ?? roles[0]?.id,
-    [roles]
+    () => finalRoles.find((r) => r.isDefault)?.id ?? finalRoles[0]?.id,
+    [finalRoles]
   );
   const [selectedId, setSelectedId] = useState<string | number | undefined>(defaultSelected);
 
@@ -25,7 +40,10 @@ export function ActiveRoles({ roles }: ActiveRolesProps) {
         <p className="text-xs text-muted-foreground">Select active role available to the user.</p>
       </div>
       <div className="space-y-3">
-        {roles.map((role) => {
+        {finalRoles.length === 0 && (
+          <p className="text-sm text-muted-foreground">No active roles found.</p>
+        )}
+        {finalRoles.map((role) => {
           const selected = role.id === selectedId;
           return (
             <button
@@ -85,3 +103,4 @@ export function ActiveRoles({ roles }: ActiveRolesProps) {
 
   );
 }
+

@@ -15,6 +15,7 @@ export function SearchBar({ placeholder = 'Search...', className = '' }: SearchB
       <Input
         type="search"
         className="pl-10 bg-background border-purple-border focus-visible:border-purple-border focus-visible:ring-purple-ring/90"
+        placeholder={placeholder}
       />
     </div>
   );

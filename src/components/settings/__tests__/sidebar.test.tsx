@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Sidebar } from '../sidebar';
 
-// Mock Next.js navigation
 vi.mock('next/navigation', () => ({
   usePathname: () => '/settings',
 }));

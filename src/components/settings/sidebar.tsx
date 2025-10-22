@@ -96,7 +96,7 @@ export function Sidebar() {
             Dismiss
           </button>
           <button className="text-xs text-[var(--purple-text)] hover:text-[var(--purple-text)] font-medium hover:underline">
-            What's new?
+            What&apos;s new?
           </button>
         </div>
       </div>
