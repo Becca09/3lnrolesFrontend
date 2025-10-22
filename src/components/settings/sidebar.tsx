@@ -8,7 +8,7 @@ import { usePathname } from 'next/navigation';
 import { SearchBar } from './search-bar';
 import Logomark from '@/assets/Logomark.jpg';
 import FeatureImg from '@/assets/Image.jpg';
-import ryhe from '@/assets/rhyaAvater.jpg';
+import ryhe  from '@/assets/rhyaAvater.jpg';
 
 export const navigation = [
   { name: 'Home', href: '/home', icon: Home },
@@ -36,7 +36,7 @@ export function Sidebar() {
             className="object-cover"
           />
         </div>
-        <span className="font-semibold text-md">Untitled UI</span>
+        <span className="font-semibold text-md">Untitled UI </span>
       </div>
 
       <div className="px-3 py-4">
@@ -75,7 +75,7 @@ export function Sidebar() {
       <div className="bg-muted rounded-lg p-4 m-5">
         <p className="text-sm font-semibold mb-1">New features available!</p>
         <p className="text-xs text-muted-foreground mb-3">
-          Check out the new dashboard view. Pages now load faster.
+          Check out the new dashboard view. Pages now load faster .
         </p>
         <div className="relative mb-3 rounded-lg  overflow-hidden">
           <Image
@@ -112,7 +112,7 @@ export function Sidebar() {
             />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">Olivia Rhye</p>
+            <p className="text-sm font-medium truncate">Olivia Rhye.</p>
             <p className="text-xs text-muted-foreground truncate">olivia@untitledui.com</p>
           </div>
           <div>
